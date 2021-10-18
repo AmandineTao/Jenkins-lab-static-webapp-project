@@ -12,7 +12,7 @@ pipeline{
     agent none
 
     stages{
-static-website-example
+
         stage ('Build Image'){
             agent any
             steps{
