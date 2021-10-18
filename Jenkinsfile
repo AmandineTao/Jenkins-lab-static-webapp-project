@@ -3,7 +3,7 @@ pipeline{
     environment{
         IMAGE_NAME = "matao39/static-website"
         IMAGE_TAG = "${BUILD_TAG}"
-        CONTAINER_NAME = "static-website"
+        CONTAINER_NAME = "static-website-container"
         USERNAME = "matao39"
         
 
@@ -37,11 +37,13 @@ pipeline{
         stage ('Test Image'){
             agent any
             steps{
-                script{
-                    sh '''
-                       curl http://172.17.0.1 | grep "DIMENSION"
-                    '''
-                }
+                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script{
+                        sh '''
+                            curl http://172.17.0.1 | grep -q "DIMENSION"
+                        '''
+                    }
+                 }
             }
         }
 
