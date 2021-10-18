@@ -1,11 +1,13 @@
 pipeline{
-    
-     environment{
+
+    environment{
         IMAGE_NAME = "matao39/static-website"
         IMAGE_TAG = "${BUILD_TAG}"
         CONTAINER_NAME = "static-website"
+        STAGING = "amandine-ajc-staging"
+        PRODUCTION = "amandine-ajc-production"
         USERNAME = "matao39"
-        PRODUCTION_HOST = "54.221.85.145" 
+        PRODUCTION_HOST = "3.90.164.46"
 
     }
 
@@ -22,18 +24,17 @@ pipeline{
             }
         }
 
-
         stage ('Run container based on Builded image'){
             agent any
             steps{
                 script{
                     sh '''
-                        docker run --name ${CONTAINER_NAME} -d -p 80:80 -e PORT=80 ${IMAGE_NAME}:${IMAGE_TAG}
+                        docker run --name ${CONTAINER_NAME} -d -p 80:5000 -e PORT=5000 ${IMAGE_NAME}:${IMAGE_TAG}
                         sleep 5
                     ''' 
                 }
             }
-        } 
+        }
 
         stage ('Test Image'){
             agent any
@@ -57,8 +58,7 @@ pipeline{
                 }
             }
         }
-
-       stage('Push image to Dockerhub') {
+        stage('Push image to Dockerhub') {
             agent any
             steps {
                 script {
@@ -68,6 +68,31 @@ pipeline{
                     '''
                 }
             }
-        } 
+        }
+
+
+
+        stage('Deploy app on EC2-cloud Production') {
+            agent any
+            when{
+                expression{ GIT_BRANCH == 'origin/master'}
+            }
+            steps{
+                withCredentials([sshUserPrivateKey(credentialsId: "ssh-ec2-cloud", keyFileVariable: 'keyfile', usernameVariable: 'NUSER')]) {
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                        script{ 
+                            sh'''
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${PRODUCTION_HOST} -C \'docker rm -f static-webapp-prod\'
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${PRODUCTION_HOST} -C \'docker run -d --name static-webapp-prod  -e PORT=80 -p 80:80 matao39/static-website\'
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+
 
 }
