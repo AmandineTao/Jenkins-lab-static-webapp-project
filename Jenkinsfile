@@ -4,10 +4,8 @@ pipeline{
         IMAGE_NAME = "matao39/static-website"
         IMAGE_TAG = "${BUILD_TAG}"
         CONTAINER_NAME = "static-website"
-        STAGING = "amandine-ajc-staging"
-        PRODUCTION = "amandine-ajc-production"
         USERNAME = "matao39"
-        PRODUCTION_HOST = "3.90.164.46"
+        PRODUCTION_HOST = "54.221.85.145"
 
     }
 
