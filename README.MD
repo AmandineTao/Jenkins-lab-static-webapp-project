@@ -1,3 +1,5 @@
+
+[![Build Status](http://ec2-34-234-164-149.compute-1.amazonaws.com:8080/buildStatus/icon?job=static-website)](http://ec2-34-234-164-149.compute-1.amazonaws.com:8080/job/static-website/)
 Static Website Example
 ----------------------
 
