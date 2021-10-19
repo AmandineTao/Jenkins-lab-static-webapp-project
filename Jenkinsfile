@@ -40,7 +40,7 @@ pipeline{
                  catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     script{
                         sh '''
-                            curl http://172.17.0.1 | grep -q "HTML5"
+                            curl http://172.17.0.1 | grep -q "Dimension"
                         '''
                     }
                  }
@@ -89,10 +89,7 @@ pipeline{
             }
         }
 
-        
-
-
-
+    
 }
 
 }
